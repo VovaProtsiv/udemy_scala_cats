@@ -1,6 +1,7 @@
 package fpfinal.common
 
 import cats.Order
+import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyChain, NonEmptySet, Validated}
 import fpfinal.app.Configuration.IsValid
 
@@ -14,13 +15,16 @@ object Validations {
     * TODO #1: Check that this String's length does not exceed the provided limit.
     */
   def maxLength(s: String, n: Int): IsValid[String] =
-    ???
+    Validated.condNec(s.length<=n,s, s"The string's length does not exceed the provided limit: $n")
 
   /**
     * TODO #2: Turn this String into a validated double
     */
-  def double(s: String): IsValid[Double] =
-    ???
+  def double(s: String): IsValid[Double] = {
+    Validated.fromOption(
+      s.toDoubleOption,NonEmptyChain("The string must be a valid double")
+    )
+  }
 
   /**
    * Validates that a Double is >= 0

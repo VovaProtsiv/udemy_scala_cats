@@ -3,6 +3,7 @@ package fpfinal.model
 import cats._
 import cats.implicits._
 import fpfinal.app.Configuration.IsValid
+import fpfinal.common.Validations
 import fpfinal.common.Validations._
 import fpfinal.model.Person.showPerson
 
@@ -33,7 +34,9 @@ object Person {
     * - The name should only contain letters
     * - The name should be at most 32 chars long
     */
-  def create(name: String): IsValid[Person] = ???
+  def create(name: String): IsValid[Person] =
+    (Validations.nonEmptyString(name),Validations.allLetters(name),Validations.maxLength(name,32))
+      .mapN((_,_,_)=>new Person(name))
 
   implicit val showPerson: Show[Person] = Show.show(_.name)
 

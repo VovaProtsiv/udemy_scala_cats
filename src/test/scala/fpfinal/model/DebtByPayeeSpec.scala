@@ -101,4 +101,5 @@ class DebtByPayeeSpec extends FpFinalSpec {
   }
 
   // TODO #17: Add typeclass tests for Eq and Monoid
+  checkAll("EqTests[DebtByPayee]",EqTests[DebtByPayee].eqv)
 }

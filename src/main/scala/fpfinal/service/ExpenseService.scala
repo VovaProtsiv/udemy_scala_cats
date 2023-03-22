@@ -78,12 +78,19 @@ trait LiveExpenseService extends ExpenseService {
     /**
      * Adds an expense to the state.
      */
-    override def addExpense(expense: Expense): ExpenseOp[Expense] = ???
+    override def addExpense(expense: Expense): ExpenseOp[Expense] = State {
+      st=>(st.addExpense(expense),expense)
+    }
 
     /**
      * Computes the debt for all the people involved, based on the expenses
      * there are in the state.
      */
-    override def computeDebt(): ExpenseOp[DebtByPayer] = ???
+    override def computeDebt(): ExpenseOp[DebtByPayer] = State {
+      st => {
+        val payers = st.expenses.map(DebtByPayer.fromExpense)
+        (st,payers.foldMap(identity).simplified)
+      }
+    }
   }
 }

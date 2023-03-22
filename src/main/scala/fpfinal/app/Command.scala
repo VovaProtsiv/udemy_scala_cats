@@ -4,8 +4,11 @@ import cats._
 import cats.implicits._
 import fpfinal.app.Configuration.{AppOp, IsValid, SuccessMsg, readEnv}
 import fpfinal.app.Syntax._
+import fpfinal.common.IO
 import fpfinal.common.Validations._
 import fpfinal.model.{Expense, Money, Person}
+
+import scala.{Right, util}
 
 /**
  * Represents a single command of the application (e.g. Add an expense).
@@ -82,7 +85,14 @@ object AddExpenseCommand extends Command {
       *
       * Extra points: implement it using ME.tailRecM
       */
-    def readParticipants(): AppOp[List[String]] = ???
+    def readParticipants(): AppOp[List[String]] = {
+      ME.tailRecM(List[String]()){ps=>
+        for{
+          env <- readEnv
+          pName <- env.console.readLine("Enter participant name or END to finish: ").toAppOp
+        } yield if(pName == "END") Right(ps) else Left(pName :: ps)
+      }
+    }
 
     /**
       * TODO #27: Use the helper functions in common.Validations and return a validated
@@ -95,7 +105,8 @@ object AddExpenseCommand extends Command {
         payer: String,
         amount: String,
         participants: List[String]
-    ): IsValid[AddExpenseData] = ???
+    ): IsValid[AddExpenseData] =
+      (nonEmptyString(payer),double(amount),participants.traverse(nonEmptyString)).mapN((p,d,ps)=>AddExpenseData(p,d,ps))
 
     def readData(): AppOp[AddExpenseData] = {
       for {
@@ -116,7 +127,13 @@ object AddExpenseCommand extends Command {
       *
       * Hint: Use ME.fromOption
       */
-    def findPerson(name: String): AppOp[Person] = ???
+    def findPerson(name: String): AppOp[Person] = {
+      for {
+        env <- readEnv
+        maybePerson <- env.personService.findByName(name).toAppOp
+        p <- ME.fromOption(maybePerson,s"Person not found: [$name]")
+      } yield p
+    }
 
     for {
       env          <- readEnv
@@ -159,7 +176,12 @@ case object AddPersonCommand extends Command {
       *
       * Upon successful completion, return the message 'Person created successfully'.
       */
-    ???
+   for {
+     env <- readEnv
+    pData <- readData()
+     person <- Person.create(pData.name).toAppOp
+     _ <- env.personService.addPerson(person).toAppOp
+   } yield "Person created successfully"
   }
 }
 
