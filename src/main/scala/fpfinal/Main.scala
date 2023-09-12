@@ -7,8 +7,11 @@ import fpfinal.app.{App, AppState}
 object Main {
   def main(args: Array[String]): Unit = {
     App
+      //add 1
       .run()
       .unsafeRunApp(liveEnv, AppState.empty)
     // todo
+///34
+    //2
   }
 }
