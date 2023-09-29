@@ -5,6 +5,7 @@ import fpfinal.app.Syntax._
 import fpfinal.app.{App, AppState}
 
 object Main {
+  // commit we
   def main(args: Array[String]): Unit = {
     App
       //add 1
