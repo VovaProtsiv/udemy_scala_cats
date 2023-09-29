@@ -24,9 +24,7 @@ trait PersonService {
      */
     def findByName(name: String): PersonOp[Option[Person]]
 
-    /**
-     * Adds a person to the state.
-     */
+
     def addPerson(person: Person): PersonOp[Unit]
 
     /**
