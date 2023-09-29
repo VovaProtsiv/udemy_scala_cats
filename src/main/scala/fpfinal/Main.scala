@@ -9,5 +9,6 @@ object Main {
     App
       .run()
       .unsafeRunApp(liveEnv, AppState.empty)
+    // todo
   }
 }
